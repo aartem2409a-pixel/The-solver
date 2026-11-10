@@ -22,6 +22,7 @@
    ```HTML
     <script src="[https://cdn.jsdelivr.net/gh/aartem2409a-pixel/The-solver@main/qwen-solver.js](https://cdn.jsdelivr.net/gh/aartem2409a-pixel/The-solver@main/qwen-solver.js)"></script>
 
+
 ## Подробная инструкция по установке и запуску (Пошагово)
 
 Чтобы скрипт мог отправлять задачи в нейросеть, на вашем компьютере должен быть запущен локальный сервер искусственного интеллекта. Ниже приведена инструкция для связки с **Ollama**.
