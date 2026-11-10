@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qwen Solver Injector Module</title>
+  <style>
+    :root {
+      --bg-primary: #12131c;
+      --bg-card: #1e1f2e;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border: #2d2f45;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      margin: 0;
+      padding: 24px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1, h2, h3 {
+      color: #fff;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .mock-task {
+      background: #171825;
+      border-left: 4px solid var(--accent);
+      padding: 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+    }
+
+    pre, code {
+      background: #181926;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: "Fira Code", monospace;
+      color: #e5e7eb;
+    }
+
+    pre {
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    code {
+      padding: 2px 6px;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+    }
+
+    /* Styles for Embedded Injector UI */
+    #qwen-solver-root {
+      all: initial;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999999;
+    }
+
+    #qwen-solver-root * {
+      box-sizing: border-box;
+    }
+
+    .qwen-widget-btn {
+      background: #6366f1;
+      color: white;
+      border: 2px solid #818cf8;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .qwen-widget-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.7);
+    }
+
+    .qwen-status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ef4444;
+    }
+
+    .qwen-status-dot.active {
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    .qwen-panel {
+      position: absolute;
+      bottom: 60px;
+      right: 0;
+      width: 380px;
+      background: #1e1f2e;
+      border: 1px solid #2d2f45;
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      color: #f3f4f6;
+    }
+
+    .qwen-panel.visible {
+      display: flex;
+    }
+
+    .qwen-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #2d2f45;
+      padding-bottom: 10px;
+    }
+
+    .qwen-panel-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: #fff;
+    }
+
+    .qwen-panel-close {
+      background: transparent;
+      border: none;
+      color: #9ca3af;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .qwen-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .qwen-input-group label {
+      font-size: 11px;
+      color: #9ca3af;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .qwen-input {
+      background: #12131c;
+      border: 1px solid #2d2f45;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .qwen-result-area {
+      background: #12131c;
+      border: 1px solid #2d2f45;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 13px;
+      max-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      color: #e5e7eb;
+    }
+
+    .qwen-action-btn {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .qwen-action-btn:hover {
+      background: #059669;
+    }
+
+    .qwen-action-btn:disabled {
+      background: #374151;
+      cursor: not-allowed;
+    }
+
+    .tab-btn {
+      background: #12131c;
+      border: 1px solid #2d2f45;
+      color: #9ca3af;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .tab-btn.active {
+      background: #6366f1;
+      color: #fff;
+      border-color: #6366f1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🤖 Qwen Task Solver Injection Module</h1>
+  <p>Модуль решения заданий и олимпиад в режиме реального времени на основе локального сервера <strong>Ollama / LM Studio</strong> с моделью <strong>Qwen</strong> без внешних API-ключей.</p>
+
+  <div class="card">
+    <h2>📌 Демонстрационная олимпиадная задача</h2>
+    <p>Модуль парсит контент страницы с помощью селектора или выделения и отправляет его в локальную модель Qwen.</p>
+
+    <div class="mock-task" id="olympiad-task">
+      <h3>Задача №4: Комбинаторика и алгоритмы</h3>
+      <p>В строке записаны числа от 1 до 100. Какое минимальное количество чисел нужно вычеркнуть, чтобы оставшиеся числа не содержали ни одной пары чисел, сумма которых равна 101?</p>
+      <ul>
+        <li>A) 25</li>
+        <li>B) 50</li>
+        <li>C) 49</li>
+        <li>D) 75</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💻 Инструкция для публикации на GitHub (README.md)</h2>
+    <div style="display:flex; gap:10px; margin-bottom:10px;">
+      <button class="tab-btn active" onclick="switchTab('readme')">README.md</button>
+      <button class="tab-btn" onclick="switchTab('script')">qwen-solver.js</button>
+    </div>
+
+    <div id="tab-readme">
+      <pre><code># Qwen Olympiad Solver JS Module
+
+Автономный JS-модуль для встраивания в веб-страницы. Позволяет автоматически решать тесты, задачи и олимпиадные задания с помощью локальной нейросети **Qwen** (через Ollama / LM Studio) без API-ключей и оплаты.
+
+## 🚀 Особенности
+- **Без API-ключа**: Работает через локальный инференс (`http://localhost:11434` или `http://localhost:1234`).
+- **Floating UI**: Кнопка включения/выключения и управления встроена в нижний правый угол экрана.
+- **Универсальный парсинг**: Решает выделенный текст или автоматически сканирует задания по CSS-селекторам.
+- **Высокая скорость**: Никаких сторонних серверов и задержек сети.
+
+## 📦 Быстрый старт и подключение
+
+### Step 1: Запуск локального сервера Qwen
+
+#### Вариант А (Ollama):
+```bash
+# 1. Установите Ollama с сайта ollama.com
+# 2. Разрешите CORS для обращений с любых страниц:
+# Linux/macOS:
+export OLLAMA_ORIGINS="*"
+ollama serve
+
+# Windows (в PowerShell):
+$env:OLLAMA_ORIGINS="*"
+ollama serve
+
+# 3. Скачайте модель Qwen:
+ollama run qwen2.5:7b
