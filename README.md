@@ -18,3 +18,7 @@
   ```bash
   export OLLAMA_ORIGINS="*"
   ollama serve
+## Подключение к сайту
+   ```HTML
+    <script src="[https://cdn.jsdelivr.net/gh/aartem2409a-pixel/The-solver@main/qwen-solver.js](https://cdn.jsdelivr.net/gh/aartem2409a-pixel/The-solver@main/qwen-solver.js)"></script>
+
